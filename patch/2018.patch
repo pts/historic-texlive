@@ -1,0 +1,110 @@
+--- texmf-dist/scripts/texlive/tlmgr.pl.orig	2019-01-19 00:37:48.853341216 +0100
++++ texmf-dist/scripts/texlive/tlmgr.pl	2019-01-19 00:26:52.676618375 +0100
+@@ -62,6 +62,8 @@
+     $Master =~ s,/*[^/]*$,,;
+     if ($ismain) {
+       $bindir = $Master;
++      # TODO(pts): use Cwd and readlink.
++      $::_platform_ = $1 if $bindir =~ m@/bin/(\w+-\w+)\Z(?!\n)@;
+       $Master = "$Master/../..";
+     } else {
+       # for the time being, this code will not be used or tested
+@@ -4430,6 +4432,7 @@
+           $loc = $repos{$repo};
+         }
+         my ($tlpdb, $errormsg) = setup_one_remotetlpdb($loc);
++        $loc = $tlpdb->root if $tlpdb;
+         if (!defined($tlpdb)) {
+           tlwarn("$prg: cannot get TLPDB from location $loc\n\n");
+         } else {
+@@ -6805,6 +6808,7 @@
+   if (!defined($remotetlpdb)) {
+     return(0, $errormsg);
+   }
++  $location = $remotetlpdb->root;  # Typical code path of `tlmgr install'.
+ 
+   return 1 if ($silent);
+ 
+@@ -6923,6 +6927,7 @@
+         tldie("$prg: main database at $location is not signed\n");
+       }
+     }
++    $location = $remotetlpdb->root if $remotetlpdb;
+   }
+   if (!defined($remotetlpdb)) {
+     return(undef, $loadmediasrcerror . $location);
+@@ -6997,7 +7002,7 @@
+   }
+ 
+   # check for being frozen
+-  if ($remotetlpdb->config_frozen) {
++  if (00 and $remotetlpdb->config_frozen) {
+     my $frozen_msg = <<FROZEN;
+ TeX Live $TeXLive::TLConfig::ReleaseYear is frozen forever and will no
+ longer be updated.  This happens in preparation for a new release.
+--- tlpkg/TeXLive/TLUtils.pm.orig	2019-01-19 00:37:48.853341216 +0100
++++ tlpkg/TeXLive/TLUtils.pm	2019-01-18 23:59:01.400250424 +0100
+@@ -1596,7 +1596,7 @@
+   }
+   my $cmd = $keyval{'cmd'};
+ 
+-  my $texdir = `kpsewhich -var-value=SELFAUTOPARENT`;
++  my $texdir = $::installerdir or `kpsewhich -var-value=SELFAUTOPARENT`;
+   chomp($texdir);
+   my $texdir_bsl = conv_to_w32_path($texdir);
+   $cmd =~ s!^("?)TEXDIR/!$1$texdir/!g;
+@@ -1671,7 +1671,7 @@
+   if (win32() && defined($keyval{'filew32'})) {
+     $file = $keyval{'filew32'};
+   }
+-  my $texdir = `kpsewhich -var-value=SELFAUTOPARENT`;
++  my $texdir = $::installerdir or `kpsewhich -var-value=SELFAUTOPARENT`;
+   chomp($texdir);
+   my @syscmd;
+   if ($file =~ m/\.pl$/i) {
+@@ -1746,7 +1746,7 @@
+ 
+   &log("postaction $how shortcut for " . $tlpobj->name . "\n");
+   if ($how eq "install") {
+-    my $texdir = `kpsewhich -var-value=SELFAUTOPARENT`;
++    my $texdir = $::installerdir or `kpsewhich -var-value=SELFAUTOPARENT`;
+     chomp($texdir);
+     my $texdir_bsl = conv_to_w32_path($texdir);
+     $icon =~ s!^TEXDIR/!$texdir/!;
+--- tlpkg/TeXLive/TLPDB.pm.orig	2018-10-10 04:42:50.000000000 +0200
++++ tlpkg/TeXLive/TLPDB.pm	2019-01-19 00:37:04.168474367 +0100
+@@ -349,6 +349,34 @@
+     if (!$xz_succeeded) {
+       debug("TLPDB: downloading $path.$compressorextension didn't succeed, try $path\n");
+       my $ret = TeXLive::TLUtils::download_file($path, $tlpdbfile);
++      if (!$ret and $path =~ m@\A(https?|ftp)://@ and $path =~ m@/tlnet-final/(tlpkg/[^/?#]+)\Z(?!\n)@) {
++        # We do this in case we are trying to install a release which is too
++        # recent and doesn't have a historic /tlnet-final/ directory yet on the
++        # archive server. In this case we download the latest, non-final
++        # TPLDB, and if it matches the our release year, then we use it.
++
++        # my $repository = "http://repository.ctan.org/systems/texlive/tlnet";
++        my $repository = "http://www.pirbot.com/mirrors/ctan/systems/texlive/tlnet";
++        my $path2 = "$repository/$1";
++        unlink($tlpdbfile);
++        if (TeXLive::TLUtils::download_file($path2, $tlpdbfile) and (-r $tlpdbfile)) {
++          my $fh;
++          tldie("$0: fatal: open $tlpdbfile: $!\n") if !open($fh, "<", $tlpdbfile);
++          my $release;
++          while (<$fh>) {
++            last if !/\S/;
++            if (m@^depend release/(20\d\d)@) { $release = $1; last }
++          }
++          tldie("$0: fatal: close $tlpdbfile: $!\n") if !close($fh);
++          # TODO(pts): Download fewer MiB if the releases are not equal.
++          if ($release eq $TeXLive::TLConfig::ReleaseYear) {
++            warn("TLPDB: Using non-final repository $path2\n");
++            $path = $path2;
++            $self->root($repository);
++            $ret = 1;
++          }
++        }
++      }
+       # better to check both, the return value AND the existence of the file
+       if ($ret && (-r $tlpdbfile)) {
+         # do nothing

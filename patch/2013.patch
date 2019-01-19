@@ -1,0 +1,49 @@
+--- texmf-dist/scripts/texlive/tlmgr.pl.orig	2014-02-08 00:49:53.000000000 +0100
++++ texmf-dist/scripts/texlive/tlmgr.pl	2019-01-18 22:20:04.241083873 +0100
+@@ -50,6 +50,8 @@
+     $Master =~ s,/*[^/]*$,,;
+     if ($ismain) {
+       $bindir = $Master;
++      # TODO(pts): use Cwd and readlink.
++      $::_platform_ = $1 if $bindir =~ m@/bin/(\w+-\w+)\Z(?!\n)@;
+       $Master = "$Master/../..";
+     } else {
+       # for the time being, this code will not be used or tested
+@@ -5660,7 +5662,7 @@
+   }
+ 
+   # check for being frozen
+-  if ($remotetlpdb->option("frozen")) {
++  if (0 and $remotetlpdb->option("frozen")) {
+     my $frozen_msg = <<FROZEN;
+ TeX Live $TeXLive::TLConfig::ReleaseYear is frozen forever and will no
+ longer be updated.  This happens in preparation for a new release.
+--- tlpkg/TeXLive/TLUtils.pm.orig	2013-10-16 02:24:15.000000000 +0200
++++ tlpkg/TeXLive/TLUtils.pm	2019-01-18 22:19:16.652163559 +0100
+@@ -1690,7 +1690,7 @@
+   }
+   my $cmd = $keyval{'cmd'};
+ 
+-  my $texdir = `kpsewhich -var-value=SELFAUTOPARENT`;
++  my $texdir = $::installerdir or `kpsewhich -var-value=SELFAUTOPARENT`;
+   chomp($texdir);
+   my $texdir_bsl = conv_to_w32_path($texdir);
+   $cmd =~ s!^("?)TEXDIR/!$1$texdir/!g;
+@@ -1765,7 +1765,7 @@
+   if (win32() && defined($keyval{'filew32'})) {
+     $file = $keyval{'filew32'};
+   }
+-  my $texdir = `kpsewhich -var-value=SELFAUTOPARENT`;
++  my $texdir = $::installerdir or `kpsewhich -var-value=SELFAUTOPARENT`;
+   chomp($texdir);
+   my @syscmd;
+   if ($file =~ m/\.pl$/i) {
+@@ -1840,7 +1840,7 @@
+ 
+   &log("postaction $how shortcut for " . $tlpobj->name . "\n");
+   if ($how eq "install") {
+-    my $texdir = `kpsewhich -var-value=SELFAUTOPARENT`;
++    my $texdir = $::installerdir or `kpsewhich -var-value=SELFAUTOPARENT`;
+     chomp($texdir);
+     my $texdir_bsl = conv_to_w32_path($texdir);
+     $icon =~ s!^TEXDIR/!$texdir/!;

@@ -1,0 +1,60 @@
+--- texmf/scripts/texlive/tlmgr.pl.orig	2011-01-08 01:51:33.000000000 +0100
++++ texmf/scripts/texlive/tlmgr.pl	2019-01-18 20:19:13.572455861 +0100
+@@ -48,6 +48,8 @@
+     $Master =~ s,/*[^/]*$,,;
+     if ($ismain) {
+       $bindir = $Master;
++      # TODO(pts): use Cwd and readlink.
++      $::_platform_ = $1 if $bindir =~ m@/bin/(\w+-\w+)\Z(?!\n)@;
+       $Master = "$Master/../..";
+     } else {
+       # for the time being, this code will not be used or tested
+@@ -4608,7 +4610,7 @@
+   }
+ 
+   # check for being frozen
+-  if ($tlmediatlpdb->option("frozen")) {
++  if (0 && $tlmediatlpdb->option("frozen")) {
+     my $frozen_msg = <<FROZEN;
+ TeX Live $TeXLive::TLConfig::ReleaseYear is frozen forever and will no
+ longer be updated.  This happens in preparation for a new release.
+--- tlpkg/TeXLive/TLWinGoo.pm.orig	2010-07-07 02:06:03.000000000 +0200
++++ tlpkg/TeXLive/TLWinGoo.pm	2019-01-17 19:12:17.000108891 +0100
+@@ -338,7 +338,7 @@
+   $sr =~ s/\\/\//g;
+   $sr = $sr . '/' unless $sr =~ m!/$!;
+   return 0 if index($d, $sr)==0;
+-  foreach $p qw(luatex.exe mktexlsr.exe pdftex.exe tex.exe xetex.exe) {
++  foreach $p (qw(luatex.exe mktexlsr.exe pdftex.exe tex.exe xetex.exe)) {
+     return 1 if (-e $d.$p);
+   }
+   return 0;
+--- tlpkg/TeXLive/TLUtils.pm.orig	2010-12-21 05:35:03.000000000 +0100
++++ tlpkg/TeXLive/TLUtils.pm	2019-01-18 22:04:16.054839773 +0100
+@@ -1571,7 +1571,7 @@
+   }
+   my $cmd = $keyval{'cmd'};
+ 
+-  my $texdir = `kpsewhich -var-value=SELFAUTOPARENT`;
++  my $texdir = $::installerdir or `kpsewhich -var-value=SELFAUTOPARENT`;
+   chomp($texdir);
+   my $texdir_bsl = conv_to_w32_path($texdir);
+   $cmd =~ s!^("?)TEXDIR/!$1$texdir/!g;
+@@ -1608,7 +1608,7 @@
+   if (win32() && defined($keyval{'filew32'})) {
+     $file = $keyval{'filew32'};
+   }
+-  my $texdir = `kpsewhich -var-value=SELFAUTOPARENT`;
++  my $texdir = $::installerdir or `kpsewhich -var-value=SELFAUTOPARENT`;
+   chomp($texdir);
+   my @syscmd;
+   if ($file =~ m/\.pl$/i) {
+@@ -1683,7 +1683,7 @@
+ 
+   &log("postaction $how shortcut for " . $tlpobj->name . "\n");
+   if ($how eq "install") {
+-    my $texdir = `kpsewhich -var-value=SELFAUTOPARENT`;
++    my $texdir = $::installerdir or `kpsewhich -var-value=SELFAUTOPARENT`;
+     chomp($texdir);
+     my $texdir_bsl = conv_to_w32_path($texdir);
+     $icon =~ s!^TEXDIR/!$texdir/!;
