@@ -1,0 +1,179 @@
+This file contains useful information and notes for the developers of
+historic-texlive.
+
+The TeX Live install directory is portable, and it refers to $HOME (as ~)
+only as TEXMFHOME, TEXMFVAR and TEXMFCONFIG in
+texmf/web2c/texmf.cnf, texmf/web2c/texmfcnf.lua, tlpkg/texlive.profile.
+
+Example from texmf/web2c/texmf.cnf :
+
+  TEXMFHOME = ~/texmf
+  TEXMFVAR = ~/.texlive2014/texmf-var
+  TEXMFCONFIG = ~/.texlive2014/texmf-config
+
+---
+
+TODO: Should we add libc.so.6 etc. for i386-linux and x86_64-linux with
+      LD_LIBRARY_PATH or some ./ ELF tricks like https://nekovm.org/ ?
+      Does it work in Linux from 2010 (e.g. Ubuntu Lucid)?
+TODO: should we generate fonts to this directory here? /usr/local/google/home/pts/.texlive2018/texmf-var/fonts/tfm/jknappen/ec/ecrm1000.tfm
+TODO: Enforce readlink(...) in $::_platform_ detection in tlmgr.pl.
+TODO: Do we need $::_platform_ detection in other scripts? Maybe add it to
+      TeXLive::TLUtils::platform to be safe?
+TODO: autodetect Unix platform -- is Perl enough? (there is also wget, xz and xzdec)
+      Add xz and xzdec for all platforms.
+      TODO: Can `tlmgr install' use wget? (add /tlpkg/installer/wget/wget.i386-linux to try)
+      TODO: .7z.sfx works only on i386-linux and x86_64-linux
+      install-tl-2018 has them for all platforms:
+      $ find -name 'xz*'
+      ./tlpkg/installer/xz
+      ./tlpkg/installer/xz/xz.i386-linux
+      ./tlpkg/installer/xz/xz.x86_64-linuxmusl
+      ./tlpkg/installer/xz/xz.i386-cygwin.exe
+      ./tlpkg/installer/xz/xz.aarch64-linux
+      ./tlpkg/installer/xz/xz.amd64-freebsd
+      ./tlpkg/installer/xz/xz.amd64-netbsd
+      ./tlpkg/installer/xz/xz.i386-freebsd
+      ./tlpkg/installer/xz/xz.x86_64-cygwin.exe
+      ./tlpkg/installer/xz/xz.armhf-linux
+      ./tlpkg/installer/xz/xz.x86_64-darwin
+      ./tlpkg/installer/xz/xz.x86_64-darwinlegacy
+      ./tlpkg/installer/xz/xz.sparc-solaris
+      ./tlpkg/installer/xz/xz.x86_64-linux
+      ./tlpkg/installer/xz/xz.i386-solaris
+      ./tlpkg/installer/xz/xz.x86_64-solaris
+      ./tlpkg/installer/xz/xz.i386-netbsd
+      $ find -name 'wget*'
+      ./tlpkg/installer/wget
+      ./tlpkg/installer/wget/wget.i386-freebsd
+      ./tlpkg/installer/wget/wget.x86_64-darwin
+      ./tlpkg/installer/wget/wget.x86_64-darwinlegacy
+      ./tlpkg/installer/wget/wget.amd64-freebsd
+      ./tlpkg/installer/wget/wget.i386-netbsd
+      ./tlpkg/installer/wget/wget.amd64-netbsd
+      ./tlpkg/installer/wget/wget.sparc-solaris
+DONE: i386 shouldn't install x86_64 binaries
+TODO: install only texlive-scripts and texlive.infra by default
+TODO: Make scripts (e.g. tlmgr) work with relative paths.
+TODO: Get rid of the message:
+      TeX Live 2010 is frozen forever and will no
+      longer be updated.  This happens in preparation for a new release.
+      ...
+TODO: add an options to enable docs and sources (later?)
+
+---
+
+latext CTAN -repository http://mirror.ctan.org/systems/texlive/tlnet
+redirects to            http://www.pirbot.com/mirrors/ctan/systems/texlive/tlnet
+http://mirror.ctan.org/systems/texlive/tlnet/install-tl-unx.tar.gz
+`depend release/2018' in http://mirror.ctan.org/systems/texlive/tlnet/tlpkg/texlive.tlpdb (slower than pirbot)
+`depend release/2018' in http://www.pirbot.com/mirrors/ctan/systems/texlive/tlnet/tlpkg/texlive.tlpdb  (14 MiB file)
+`depend release/2010' in http://ftp.math.utah.edu/pub/tex/historic/systems/texlive/2010/tlnet-final/tlpkg/texlive.tlpdb
+
+tlmgr option repository ctan
+
+$ ./install-tl -repository http://ftp.math.utah.edu/pub/tex/historic/systems/texlive/2010/tlnet-final
+
+scheme-minimal (plain only)
+--> /tmp/many2010
+
+* texlive-scripts is platform-specific: man and rungs*
+* texlive-scripts.i386-linux
+* texlive.infra.i386-linux
+* texlive.infra is platform-specific, has tlmgr, wget, xz and xzdec
+* 2017 has scheme-infraonly
+* hyphen-base?
+* kpathsea is needed
+* tetex is needed for fmtutil-sys
+
+!! tcdialog ?
+Installing [097/111, time/total: 00:32/00:35]: texlive-scripts [43k]
+Installing [098/111, time/total: 00:32/00:35]: texlive-scripts.i386-linux [1k]
+Installing [099/111, time/total: 00:32/00:35]: texlive-scripts.mips-irix [1k]
+Installing [100/111, time/total: 00:32/00:35]: texlive-scripts.sparc-solaris [1k]
+Installing [101/111, time/total: 00:33/00:36]: texlive-scripts.x86_64-linux [1k]
+Installing [102/111, time/total: 00:33/00:36]: texlive.infra [215k]
+Installing [103/111, time/total: 00:34/00:37]: texlive.infra.i386-linux [79k]
+Installing [104/111, time/total: 00:34/00:37]: texlive.infra.mips-irix [102k]
+Installing [105/111, time/total: 00:34/00:36]: texlive.infra.sparc-solaris [168k]
+Installing [106/111, time/total: 00:34/00:36]: texlive.infra.x86_64-linux [81k]
+
+
+$ /tmp/many2010/bin/i386-linux/tlmgr install scheme-basic  # + latex
+[13/36, 00:20/00:49] install: latex [145k]
+[14/36, 00:20/00:35] install: latex-bin.i386-linux [1k]
+[15/36, 00:21/00:36] install: latex-bin.mips-irix [1k]
+[16/36, 00:21/00:36] install: latex-bin.sparc-solaris [1k]
+[17/36, 00:21/00:36] install: latex-bin.x86_64-linux [1k]
+[18/36, 00:21/00:36] install: latex-bin [1k]
+
+$ /tmp/many2010/bin/i386-linux/tlmgr install latex latex-fonts latexconfig
+[1/3, ??:??/??:??] install: latex [145k]
+[2/3, 00:00/00:00] install: latex-fonts [19k]
+[3/3, 00:01/00:01] install: latexconfig [6k]
+
+$ /tmp/many2010/bin/i386-linux/tlmgr install latex-bin
+[1/5, ??:??/??:??] install: latex-bin.i386-linux [1k]
+[2/5, 00:01/00:05] install: latex-bin.mips-irix [1k]
+[3/5, 00:01/00:02] install: latex-bin.sparc-solaris [1k]
+[4/5, 00:01/00:01] install: latex-bin.x86_64-linux [1k]
+[5/5, 00:01/00:01] install: latex-bin [1k]
+(Installs all architectures.)
+
+Uses some of the system binaries:
+
+$ ldd /tmp/many2010/tlpkg/installer/xz/xzdec.i386-linux
+	linux-gate.so.1 (0xf7f01000)
+	libpthread.so.0 => /lib/i386-linux-gnu/libpthread.so.0 (0xf7eb9000)
+	libc.so.6 => /lib/i386-linux-gnu/libc.so.6 (0xf7d02000)
+	/lib/ld-linux.so.2 (0xf7f03000)
+$ ldd /tmp/many2010/bin/i386-linux/luatex
+	linux-gate.so.1 (0xf7f4f000)
+	libdl.so.2 => /lib/i386-linux-gnu/libdl.so.2 (0xf7f1f000)
+	libm.so.6 => /lib/i386-linux-gnu/libm.so.6 (0xf7eca000)
+	libc.so.6 => /lib/i386-linux-gnu/libc.so.6 (0xf7d13000)
+	/lib/ld-linux.so.2 (0xf7f51000)
+
+To remove /tmp/many2010/bin/sparc-solaris , this is not enough:
+
+* we need to remove it from here: /tmp/many2010/tlpkg/texlive.tlpdb
+  name 00texlive.installation
+  depend opt_install_docfiles:0
+  depend opt_install_srcfiles:0
+  depend setting_available_architectures:mips-irix i386-linux x86_64-linux sparc-solaris
+  Otherwise contains only installed packages and platforms.
+* /tmp/many2010/tlpkg/texlive.profile reflects only settings during the
+  installation
+* /tmp/many2010/tlpkg/TeXLive/TLUtils.pm has all platforms listed
+* /tmp/many2010/tlpkg/texlive.tlpdb.f934206a2d3c39a35fc81552118d7169 has
+  packages and config (name 00texlive.installation) for all platforms
+* /tmp/many2010.latex-bin/texmf-var/web2c/tlmgr.log contains 1 `install:'
+  line for each package installed, even if it was an indirect dependency)
+  of a `tlmgr install' command.
+  Example: /tmp/many2010/tlpkg/tlpobj/tex.sparc-solaris.tlpobj
+* rm -rf /tmp/many2010/tlpkg/tlpobj/*.sparc-solaris.tlpobj
+  These are only the installed packages.
+* rm -rf /tmp/many2010/bin/sparc-solaris
+* tlmgr check files:
+  Checks that all files listed in the local TLPDB ("texlive.tlpdb") are
+  actually present, and lists those missing.
+  SUXX: it doesn't print package names
+* tlmgr print-platform
+* tlmgr platform list
+* tlmgr platform add ...
+* tlmgr platform remove ...
+* tlmgr option docfiles 1
+* tlmgr option srcfiles 1
+* tlmgr update --all
+* tlmgr install --reinstall ...  # Based on the output of tlmgr check
+* tlmgr option repository ctan
+* tlmgr option repository http://mirror.ctan.org/systems/texlive/tlnet
+* tlmgr update --reinstall-forcibly-removed --all
+
+tlpkg/TeXLive/TLMedia.pm has `sub platform' to read `depend
+opt_platform:i386-linux' or use autodetection in
+TeXLive::TLUtils::platform(). But `tlmgr.pl print-platform' uses
+TeXLive::TLUtils::platform().
+
+
+__END__
