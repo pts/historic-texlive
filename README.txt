@@ -6,33 +6,51 @@ i386-linux platform is supported.
 
 How to install and use:
 
-* Download your desired release (any of TeX Live 2010--2018) an .sfx.7z file from
-  https://github.com/pts/historic-texlive/tree/master/release.i386-linux
+1. Run this (without the leading $) on an i386-linux system to install TeX
+   Live 2016 to the directory htl2016:
 
-* Make the .sfx.7z file executable with chmod +x.
+     $ sh -c "$(wget -qO- https://github.com/pts/historic-texlive/raw/master/install.sh )" . 2016
 
-* Run the .sfx.7z file as non-root.
+   Instead of 2016 above, any TeX Live release between 2010 and 2018 works.
 
-* Run
+2. Run this to install LaTeX:
 
-    $ HTLDIR/bin/i386-linux/tlmgr install scheme-basic
+     $ "$PWD"/htl2016/bin/i386-linux/tlmgr install scheme-basic
 
-  to get plain TeX and LaTeX. Specify HTLDIR as an absolute pathname.
+3. Compile a document with pdflatex:
 
-  (Alternatively you can install other schemes.
-  For TeX Live 2016 or later, the smallet scheme is scheme-infraonly, and
-  scheme-minial also works. For TeX Live 2015 and earlier the smallest
-  scheme is scheme-minimal.)
+     $ "$PWD"/htl2016/bin/i386-linux/tlmgr install MYDOC.tex
 
-* To try pdflatex, run
+The manual alternative of the installation step 1 above:
 
-    $ HTLDIR/bin/i386-linux/pdflatex hello
+1a. Download your desired release (any of TeX Live 2010--2018) an .sfx.7z
+    file from
+    https://github.com/pts/historic-texlive/tree/master/release.i386-linux
 
-historic-texlive downloads packages from this repository (mirror):
-http://ftp.math.utah.edu/pub/tex/historic/systems/texlive/YYYY/tlnet-final
+1b. Make the .sfx.7z file executable with chmod +x.
 
-Alternatively, change the repository by running:
+1c. Run the .sfx.7z file as non-root.
 
-  $ HTLDIR/tlmgr option repository ftp://tug.org/historic/systems/texlive/YYYY/tlnet-final
+As an alternative to the installation step 2 above:
+
+2a. Install only plain TeX:
+
+     $ "$PWD"/htl2016/bin/i386-linux/tlmgr install scheme-basic
+
+As an alternative to the installation step 2 above for TeXLive 2016--:
+
+2k. Install only TeX Live packaging infrastructure (no TeX):
+
+     $ "$PWD"/htl2016/bin/i386-linux/tlmgr install scheme-infraonly
+
+Additionally, between steps 1 and 2 above, change the repository:
+
+12. Run:
+
+      $ "$PWD"/htl2016/tlmgr option repository ftp://tug.org/historic/systems/texlive/YYYY/tlnet-final
+
+    Without change the repository, historic-texlive downloads packages from
+    this repository (mirror):
+    http://ftp.math.utah.edu/pub/tex/historic/systems/texlive/YYYY/tlnet-final
 
 __END__
