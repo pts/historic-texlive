@@ -35,7 +35,7 @@ As an alternative to the installation step 2 above:
 
 2a. Install only plain TeX:
 
-     $ "$PWD"/htl2016/bin/i386-linux/tlmgr install scheme-basic
+     $ "$PWD"/htl2016/bin/i386-linux/tlmgr install scheme-minimal
 
 As an alternative to the installation step 2 above for TeXLive 2016--:
 
