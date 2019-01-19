@@ -23,7 +23,7 @@ How to install and use:
 
 The manual alternative of the installation step 1 above:
 
-1a. Download your desired release (any of TeX Live 2010--2018) an .sfx.7z
+1a. Download your desired release (any of TeX Live 2010--2018) as an .sfx.7z
     file from
     https://github.com/pts/historic-texlive/tree/master/release.i386-linux
 
