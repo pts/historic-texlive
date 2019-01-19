@@ -10,9 +10,9 @@ function die() {
 }
 
 if test $# = 0 || test "$0" = --help; then
-  echo "This is historic-texlive net-installer.
+  echo "This is historic-texlive net-installer for i386-linux.
 Usage: $0 <release-year>
-Output directory witll be htl<release-year>
+Output directory is htl<release-year>
 The historic-texlive project: https://github.com/pts/historic-texlive" >&2
   exit 1
 fi
