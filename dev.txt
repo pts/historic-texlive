@@ -60,6 +60,7 @@ TODO: Get rid of the message:
       longer be updated.  This happens in preparation for a new release.
       ...
 TODO: add an options to enable docs and sources (later?)
+TODO: Include lz4 for all platforms (tlpkg/installer/lz4/ starting from 2018).
 
 ---
 

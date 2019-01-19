@@ -9,6 +9,7 @@ test $# = 0 && set htl20[0-9][0-9]
 test -f fix.sh
 test -f tiny7zx
 test -f htl2011/tlpkg/texlive.tlpdb
+type -p 7z
 
 for D in "$@"; do
   test -d "$D" || continue
