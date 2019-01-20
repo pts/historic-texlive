@@ -48,7 +48,7 @@ How to install and use on Unix:
 
 Advantages of historic-texlive over the regular install-tl installer:
 
-* It supports historic TeX live releases out of the box, without the need for
+* It supports historic TeX Live releases out of the box, without the need for
   specifying -repository flags and matching the version of install-tl to the
   repository.
 
