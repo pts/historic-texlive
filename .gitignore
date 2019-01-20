@@ -1,2 +1,8 @@
 *~
 /htl20[0-9][0-9]
+/install-htl
+/install.tgz
+/install.tgz.*
+/installer.tgz
+/installerbin.sfx.7z
+/iyear
