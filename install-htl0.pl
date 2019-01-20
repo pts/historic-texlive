@@ -526,7 +526,7 @@ sub set_tlpdb_platform($;$) {
   die "fatal: open $fn: $!\n" if !open($fh, '+<', $fn);
   my $s = join('', <$fh>);
   die "fatal: platform not defined in: $fn\n" if
-      $s !~ s@^(depend setting_available_architectures:)\S+$@$1$platform2@gm;
+      $s !~ s@^(depend (?:setting_)?available_architectures:)\S+$@$1$platform2@gm;
   die "fatal: seek $fn: $!\n" if !seek($fh, 0, 0);
   die "fatal: write $fn: $!\n" if !print($fh $s);
   die "fatal: close $fn: $!\n" if !close($fh);
@@ -539,6 +539,26 @@ do_move("$tmpdir/htl$release/bin/i386-linux", "$tmpdir/htl$release/bin/$platform
     $platform ne "i386-linux";
 unlink("$tmpdir/htl$release/texmf.bin");  # Don't check for errors.
 create_symlink("bin/$platform", "$tmpdir/htl$release/texmf.bin");
+
+sub delete_wrong_lzma($) {
+  my $lzmadir = $_[0];
+  my $dh;
+  if (opendir($dh, $lzmadir)) {
+    my $suffix = ".$platform";
+    my @entries = grep {
+        m@\Alzma(?:dec)?[.]@ and
+        (length($_) < length($suffix) or substr($_, length($_) - length($suffix)) ne $suffix)
+        }  readdir($dh);
+    closedir($dh);
+    for my $e (@entries) {
+      my $fn = "$lzmadir/$e";
+      die "fatal: unlink $fn: $!\n" if !unlink($fn);
+    }
+  }
+  rmdir($lzmadir);  # Don't check for errors.
+}
+
+delete_wrong_lzma("$tmpdir/htl$release/tlpkg/installer/lzma");
 
 sub path_to_absolute($) {
   # We could `use Cwd', but better not rely on that.

@@ -13,6 +13,8 @@ Example from texmf/web2c/texmf.cnf :
 
 ---
 
+TODO: Some tools such as mktexpk and fmtutil-sys don't work unless the first
+      directory in $PATH is set up correctly. Document this.
 TODO: Should we add libc.so.6 etc. for i386-linux and x86_64-linux with
       LD_LIBRARY_PATH or some ./ ELF tricks like https://nekovm.org/ ?
       Does it work in Linux from 2010 (e.g. Ubuntu Lucid)?
@@ -20,47 +22,56 @@ TODO: should we generate fonts to this directory here? /usr/local/google/home/pt
 TODO: Enforce readlink(...) in $::_platform_ detection in tlmgr.pl.
 TODO: Do we need $::_platform_ detection in other scripts? Maybe add it to
       TeXLive::TLUtils::platform to be safe?
-TODO: autodetect Unix platform -- is Perl enough? (there is also wget, xz and xzdec)
-      Add xz and xzdec for all platforms.
-      TODO: Can `tlmgr install' use wget? (add /tlpkg/installer/wget/wget.i386-linux to try)
-      TODO: .7z.sfx works only on i386-linux and x86_64-linux
-      install-tl-2018 has them for all platforms:
-      $ find -name 'xz*'
-      ./tlpkg/installer/xz
-      ./tlpkg/installer/xz/xz.i386-linux
-      ./tlpkg/installer/xz/xz.x86_64-linuxmusl
-      ./tlpkg/installer/xz/xz.i386-cygwin.exe
-      ./tlpkg/installer/xz/xz.aarch64-linux
-      ./tlpkg/installer/xz/xz.amd64-freebsd
-      ./tlpkg/installer/xz/xz.amd64-netbsd
-      ./tlpkg/installer/xz/xz.i386-freebsd
-      ./tlpkg/installer/xz/xz.x86_64-cygwin.exe
-      ./tlpkg/installer/xz/xz.armhf-linux
-      ./tlpkg/installer/xz/xz.x86_64-darwin
-      ./tlpkg/installer/xz/xz.x86_64-darwinlegacy
-      ./tlpkg/installer/xz/xz.sparc-solaris
-      ./tlpkg/installer/xz/xz.x86_64-linux
-      ./tlpkg/installer/xz/xz.i386-solaris
-      ./tlpkg/installer/xz/xz.x86_64-solaris
-      ./tlpkg/installer/xz/xz.i386-netbsd
-      $ find -name 'wget*'
-      ./tlpkg/installer/wget
-      ./tlpkg/installer/wget/wget.i386-freebsd
-      ./tlpkg/installer/wget/wget.x86_64-darwin
-      ./tlpkg/installer/wget/wget.x86_64-darwinlegacy
-      ./tlpkg/installer/wget/wget.amd64-freebsd
-      ./tlpkg/installer/wget/wget.i386-netbsd
-      ./tlpkg/installer/wget/wget.amd64-netbsd
-      ./tlpkg/installer/wget/wget.sparc-solaris
-DONE: i386 shouldn't install x86_64 binaries
+TODO: Can `tlmgr install' find and use wget? (add /tlpkg/installer/wget/wget.i386-linux to try)
 TODO: install only texlive-scripts and texlive.infra by default
-TODO: Make scripts (e.g. tlmgr) work with relative paths.
-TODO: Get rid of the message:
+TODO: make scripts (e.g. tlmgr) work with relative paths in old releases
+TODO: make binaries work with relative paths in old releases
+TODO: add an options to enable docs and sources (later?)
+TODO: include lz4 for all platforms (tlpkg/installer/lz4/ starting from 2018)
+TODO: add support for 2008 and 2009
+TODO: document how support for new releases can be added
+TODO: add a statically linked version of xzcat
+TODO: don't include texlive.infra (tlmgr) and texlive.infra.i386-linux
+      (xz.i386-linux, xzdec.i386-linux and wget.i386-linux), just include a
+      tiny tlmgr (without TeXLive/TLUtils.pm etc.), which can install
+      texlive.infra and texlive.infra.$platform
+      rm -rf readme-txt.dir readme-html.dir release-texlive.txt LICENSE.TL index.html README.usergroups LICENSE.CTAN README
+      This is missing from tar xJvOf ~/Downloads/texlive.infra.tar.xz tlpkg/tlpobj/texlive.infra.tlpobj
+      containersize 219948
+      containermd5 844a444ee2da86745b044fbede7613ef
+      doccontainersize 76300
+      doccontainermd5 b6a203bceaeb4ff5a68b7d5c81473d2e
+      --- containersize and containermd5 are of texlive.infra.tar.xz
+      --- doccontainersize and doccontainermd5 are of texlive.infra.doc.tar.xz
+TODO: replacements for wget:
+      Linux: busybox wget, do cross-compile it
+      macOS (darwin): does it have LWP by default? it has Python by default
+TODO: for i386-linux and x86_linux, only include a statically linked xzcat
+TODO: for which other architectures is a statically linked xzcat feasible?
+TODO: support i386-cygwin and x86_64-cygwin; does everything except for
+      symlink(2) worky? try it
+TODO: does it work with an empty language.dat?
+      These are the interesting nonempty files in 2010:
+      ./texmf-var/tex/generic/config/language.dat
+      ./texmf-var/tex/generic/config/language.dat.lua
+      ./texmf-var/tex/generic/config/language.def
+      For these above, the following can work: $PWD/htl2010/bin/x86_64-linux/tlmgr generate language --rebuild-sys
+      (Double check what works.)
+      ./texmf-config/web2c/updmap.cfg
+      ./texmf/web2c/fmtutil-hdr.cnf
+      ./texmf/web2c/updmap-hdr.cfg
+      ./texmf.cnf
+TODO: TeX Live 2008 doesn't have tlmgr in package texlive.infra.
+TODO: TeX Live 2008 uses lzmadec rather than xzdec, and bin-texlive.tar.lzma
+      $ busybox.static.uclibc.2013-07-08 unlzma -cdf <~/Downloads/bin-texlive.tar.lzma >/tmp/a
+      $ unxz --format=lzma <~/Downloads/bin-texlive.tar.lzma >/tmp/b
+      Only in /tmp/tlm2008.bak/tlpkg/installer/lzma: lzma.x86_64-linux
+      Only in /tmp/tlm2008.bak/tlpkg/installer/lzma: lzmadec.x86_64-linux
+DONE: i386 shouldn't install x86_64 binaries
+DONE : Get rid of the message:
       TeX Live 2010 is frozen forever and will no
       longer be updated.  This happens in preparation for a new release.
       ...
-TODO: add an options to enable docs and sources (later?)
-TODO: Include lz4 for all platforms (tlpkg/installer/lz4/ starting from 2018).
 
 ---
 
@@ -175,6 +186,5 @@ tlpkg/TeXLive/TLMedia.pm has `sub platform' to read `depend
 opt_platform:i386-linux' or use autodetection in
 TeXLive::TLUtils::platform(). But `tlmgr.pl print-platform' uses
 TeXLive::TLUtils::platform().
-
 
 __END__

@@ -1,0 +1,51 @@
+--- texmf/scripts/texlive/tlmgr.pl.orig	2009-02-12 13:08:37.000000000 +0100
++++ texmf/scripts/texlive/tlmgr.pl	2019-01-20 20:45:12.641126317 +0100
+@@ -33,17 +33,40 @@
+ 
+ BEGIN {
+   $^W = 1;
++  $ismain = (__FILE__ eq $0);
+   # make subprograms (including kpsewhich) have the right path:
+-  $mydir = $0;
+-  $mydir =~ s!\\!/!g if $^O =~ /^MSWin(32|64)$/i;
+-  $mydir =~ s,/[^/]*$,,;
+-  if ($^O=~/^MSWin(32|64)$/i) {
+-    $ENV{"PATH"} = "$mydir;$ENV{PATH}";
++  my ($bindir, $kpsewhichname);
++  if ($^O=~/^MSWin/i) {
++    $Master = __FILE__;
++    $Master =~ s!\\!/!g;
++    $Master =~ s![^/]*$!../../..!
++      unless ($Master =~ s!/texmf/scripts/texlive/tlmgr\.pl$!!i);
++    $bindir = "$Master/bin/win32";
++    $kpsewhichname = "kpsewhich.exe";
++    $ENV{"PATH"} = "$bindir;$ENV{PATH}";
+   } else {
+-    $ENV{"PATH"} = "$mydir:$ENV{PATH}";
++    $Master = __FILE__;
++    $Master =~ s,/*[^/]*$,,;
++    if ($ismain) {
++      $bindir = $Master;
++      # TODO(pts): use Cwd and readlink.
++      $::_platform_ = $1 if $bindir =~ m@/bin/(\w+-\w+)\Z(?!\n)@;
++      $Master = "$Master/../..";
++    } else {
++      # for the time being, this code will not be used or tested
++      $Master = "$Master/../../..";
++      # no code yet for $bindir; would have to detect platform
++    }
++    # make subprograms (including kpsewhich) have the right path:
++    $ENV{"PATH"} = "$bindir:$ENV{PATH}";
++    $kpsewhichname = "kpsewhich";
+   }
+-  #
+-  chomp($Master = `kpsewhich -var-value=SELFAUTOPARENT`);
++  if (-r "$bindir/$kpsewhichname") {
++    # if not in bootstrapping mode => kpsewhich exists, so use it to get $Master
++    chomp($Master = `kpsewhich -var-value=SELFAUTOPARENT`);
++  }
++  $::installerdir = $Master;
++
+   #
+   # make Perl find our packages first:
+   unshift (@INC, "$Master/tlpkg");

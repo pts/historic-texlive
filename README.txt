@@ -1,8 +1,11 @@
 historic-texlive: convenient installers for old TeX Live releases
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 historic-texlive is a set of scripts and binary executable for Unix for easy
-and convenient installation of TeX Live 2010--2018. All Unix platforms are
+and convenient installation of TeX Live 2008--2018. All Unix platforms are
 supported. Windows (i386-cygwin, x86_64-cygwin, win32) isn't supported.
+historic-texlive is useful for compiling old .tex documents reliably, to
+reproduce the original output files (.dvi, .ps and .pdf). For writing new
+documents, the latest release of TeX Live is recommended.
 
 How to install and use on Unix:
 
@@ -20,7 +23,7 @@ How to install and use on Unix:
 
      $ perl install-htl --platform=i386-linux 2016
 
-   Instead of 2016 above, any TeX Live release between 2010 and 2018 works.
+   Instead of 2016 above, any TeX Live release between 2008 and 2018 works.
 
    install-htl is self-contained, it doesn't download everything. However,
    you need to run tlmgr after it, which downloads packages from a TeX Live
@@ -52,7 +55,7 @@ step 1 above:
 
 The manual alternative of the installation step 1 above is:
 
-1b. Download your desired release (any of TeX Live 2010--2018) as an .sfx.7z
+1b. Download your desired release (any of TeX Live 2008--2018) as an .sfx.7z
     file from
     https://github.com/pts/historic-texlive/tree/master/release.i386-linux
 
@@ -73,5 +76,19 @@ install teX Live packaging infrastructure (without any TeX) is:
 2k. Run this:
 
      $ "$PWD"/htl2016/bin/i386-linux/tlmgr install scheme-infraonly
+
+If you need to install a TeX Live release newer than what install-htl
+supports, then please request this feature by filing an issue at
+https://github.com/pts/historic-texlive/issues
+
+Compatibility notes:
+
+* The earliest possible release historic-texlive will ever support is 2008,
+  because that's the earliest release with a net-installer and tlnet folder.
+  TeX Live releases --1996--2007 will not be supported.
+
+* As of now, TeX Live 2008 releases on platforms other than i386-linux in
+  historic-texlive are missing the lzmadec tool to extract .lzma compressed
+  package files. You have to install this tool first to make tlmgr succeed.
 
 __END__
