@@ -194,7 +194,7 @@ sub extract_tarxz_to_tmpdir($$;$) {
 }
 
 print STDERR "info: extracting installer to $tmpdir\n";
-{
+eval {
   my $s;
   if (!defined($installer) and read(DATA, $s, 64) and length($s) == 64) {
     $s =~ s@\A\s+@@;  # Not needed if .xz starts after "__DATA__\n".
@@ -215,13 +215,38 @@ print STDERR "info: extracting installer to $tmpdir\n";
     }
     extract_targz_to_tmpdir($installer);
   }
+  die "fatal: installer file not found: $tmpdir/config.guess\n" if
+      !-f("$tmpdir/config.guess");
+  die "fatal: installer file not found: $tmpdir/wget.txz\n" if
+      !-f("$tmpdir/wget.txz");
+  die "fatal: installer dir not found: $tmpdir/xz\n" if
+      !-d("$tmpdir/xz");
+};
+if ($@) {  # Diagnose a simpler targz extraction.
+  my $error = "$@";
+  eval {
+    my $fh;
+    die "fatal: open-write $tmpdir/new.tgz: $!\n" if
+        !open($fh, '>', "$tmpdir/new.tgz");
+    # Single .tar.gz file which creates a symlink: new -> old/foo
+    my $s = unpack("u", q
+aM'XL(`#RU0UP"`^W4/4X#,1"&X:DYQ9Y@UV//V%#04W*%%3$(B611=A$Y/H:&
+M'RFAB59"O$\SLL:%;?F;?K@=#S=UW-3]W*NKN0^[^BKG%)IL]E&;GS5HBJ+)
+M8B@IFF4)JNXNW4%6\#(OX[X=1?ZG%+KM\KBMU^I6KJR]_&4?8R[)LZ>+UAU/
+M=N^.=P5_P+FS?BS_I10),5C[*6VMFO4S_^^SX'O^H\<L79R>-L/]-*V2_^=E
+B/KFO[AY^O>37X08```````````````"LX`V/?!0S`"@`````a);
+    die "${error}fatal: write new.tgz: $!\n" if
+        (syswrite($fh, $s, length($s)) or 0) != length($s);
+    close($fh);
+    unlink("$tmpdir/new");
+    extract_targz_to_tmpdir("$tmpdir/new.tgz");
+    $s = readlink("$tmpdir/new");
+    die "fatal: tar-x has not created symlink\n" if
+        ($s or 0) ne "old/foo";
+    die "fatal: tar-x is broken only for the installer\n";
+  };
+  die "$error$@" . "fatal: tar-x (POSIX targz extraction) is broken\n";
 }
-die "fatal: installer file not found: $tmpdir/config.guess\n" if
-    !-f("$tmpdir/config.guess");
-die "fatal: installer file not found: $tmpdir/wget.txz\n" if
-    !-f("$tmpdir/wget.txz");
-die "fatal: installer dir not found: $tmpdir/xz\n" if
-    !-d("$tmpdir/xz");
 
 sub detect_platform() {
   # Adding #$ so that Perl will run /bin/sh.
@@ -379,7 +404,7 @@ eval {
     else { print STDERR "info: xzdec not found\n" }
   }
 };
-my $error = $@;
+my $error = "$@";
 unlink($dtbinxz);
 die $@ if $@;
 my $xzcat_cmd;
