@@ -10,7 +10,7 @@ documents, the latest release of TeX Live is recommended.
 How to install and use on Unix:
 
 1. Download
-   https://github.com/pts/historic-texlive/releases/download/install-htl-v1/install-htl
+   https://github.com/pts/historic-texlive/releases/download/install-htl-v2/install-htl
 
    As a regular user (non-root), run this to install TeX Live 2016 to the
    directory htl2016:
