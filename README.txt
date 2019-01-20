@@ -46,6 +46,27 @@ How to install and use on Unix:
 
      $ "$PWD"/htl2016/bin/i386-linux/latex MYDOC.tex
 
+Advantages of historic-texlive over the regular install-tl installer:
+
+* It supports historic TeX live releases out of the box, without the need for
+  specifying -repository flags and matching the version of install-tl to the
+  repository.
+
+* It lets the user specify the platform, e.g. if the user asks for
+  i386-linux, then neither install-htl (the historic-texlive installer) nor
+  tlmgr will install binary executables for other platforms (e.g.
+  x86_64-linux). (install-tl doesn't respect the user's choice this way.)
+
+* It contains a few bugfixes so the old installer works with newer versions
+  of Perl.
+
+* It doesn't ask any questions: it does something reasonable by default, and
+  it can be customized using command-line flags.
+
+* install-htl finishes quickly, because it doesn't download anything: it
+  delegates downloading to `tlmgr install', which the user should invoke
+  next.
+
 For platform i386-linux there is a simple and leightweight alternative of
 step 1 above:
 
