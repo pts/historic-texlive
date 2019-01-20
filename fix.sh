@@ -1,6 +1,6 @@
 #! /bin/bash
 #
-# fix.sh: convert TeXlive scheme-basic direcrtory to much smaller portable-texlive (ptl) directory
+# fix.sh: convert TeXlive scheme-basic direcrtory to much smaller historic-texlive (htl) directory
 # by pts@fazekas.hu at Fri Jan 18 21:01:49 CET 2019
 
 set -ex
@@ -10,7 +10,7 @@ test -z "$PTLFIXDIR" && PTLFIXDIR="${0%/*}"
 test -f "$PTLFIXDIR/mktexlsr"
 test -f tlpkg/texlive.tlpdb
 
-# for F in 201{1,2,3,4,5,6}; do cp -a "$(find ptl"$F" -name tlmgr.pl)"{,.orig};  cp -a "$(find ptl"$F" -name TLUtils.pm)"{,.orig}; done
+# for F in 201{1,2,3,4,5,6}; do cp -a "$(find htl"$F" -name tlmgr.pl)"{,.orig};  cp -a "$(find htl"$F" -name TLUtils.pm)"{,.orig}; done
 
 grep -Fx 'name texlive.infra' tlpkg/texlive.tlpdb
 grep -Fx 'name texlive.infra.i386-linux' tlpkg/texlive.tlpdb
