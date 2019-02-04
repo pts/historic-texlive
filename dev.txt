@@ -67,6 +67,7 @@ TODO: TeX Live 2008 uses lzmadec rather than xzdec, and bin-texlive.tar.lzma
       $ unxz --format=lzma <~/Downloads/bin-texlive.tar.lzma >/tmp/b
       Only in /tmp/tlm2008.bak/tlpkg/installer/lzma: lzma.x86_64-linux
       Only in /tmp/tlm2008.bak/tlpkg/installer/lzma: lzmadec.x86_64-linux
+      `xz -cd' can also decompress it, use `xz' as a substitute for `lzmadec'.
 DONE: i386 shouldn't install x86_64 binaries
 DONE : Get rid of the message:
       TeX Live 2010 is frozen forever and will no
