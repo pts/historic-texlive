@@ -513,9 +513,9 @@ if (defined($xzdec_prog)) {
 
 my $wget_dir = "$tmpdir/htl$release/tlpkg/wget";
 mkdir($wget_dir);  # Don't check for errors.
-if (defined($wget_prog) and $wget_prog =~ m@/@) {
+if (defined($wget_prog) and $wget_prog !~ m@/@) {
   my $basename = get_installer_basename($wget_prog);
-  do_move($xz_prog, "$wget_dir/$basename");
+  do_move($wget_prog, "$wget_dir/$basename");
   create_platform_symlink($wget_dir, $basename);
 }
 
