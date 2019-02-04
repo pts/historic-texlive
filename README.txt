@@ -25,7 +25,7 @@ How to install and use on Unix:
 
    Instead of 2016 above, any TeX Live release between 2008 and 2018 works.
 
-   install-htl is self-contained, it doesn't download everything. However,
+   install-htl is self-contained, it doesn't download anything. However,
    you need to run tlmgr after it, which downloads packages from a TeX Live
    repository the usual way.
 
@@ -44,7 +44,7 @@ How to install and use on Unix:
 
 4. Compile a document with pdflatex:
 
-     $ "$PWD"/htl2016/bin/i386-linux/latex MYDOC.tex
+     $ "$PWD"/htl2016/bin/i386-linux/pdflatex MYDOC.tex
 
 Advantages of historic-texlive over the regular install-tl installer:
 
@@ -74,7 +74,7 @@ step 1 above:
 
      $ sh -c "$(wget -qO- https://github.com/pts/historic-texlive/raw/master/install.sh )" . 2016
 
-The manual alternative of the installation step 1 above is:
+The manual alternative of the installation step 1a above is:
 
 1b. Download your desired release (any of TeX Live 2008--2018) as an .sfx.7z
     file from
@@ -92,7 +92,7 @@ An alternative to the installation step 2 above to install plain TeX only
       $ "$PWD"/htl2016/bin/i386-linux/tlmgr install scheme-minimal
 
 An alternative to the installation step 2 above for TeXLive 2016-- to
-install teX Live packaging infrastructure (without any TeX) is:
+install TeX Live packaging infrastructure (without any TeX) is:
 
 2k. Run this:
 
