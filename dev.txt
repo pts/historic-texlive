@@ -13,6 +13,10 @@ Example from texmf/web2c/texmf.cnf :
 
 ---
 
+TODO: Use muxzcat.pl and muxzcat, don't include the wget executable (replace
+      it with a Perl script doing LWP or Socket, or calling system curl or
+      wget). Estimated install-htl size would be 700 kB instead of 10000 kB
+      now.
 TODO: Some tools such as mktexpk and fmtutil-sys don't work unless the first
       directory in $PATH is set up correctly. Document this.
 TODO: Should we add libc.so.6 etc. for i386-linux and x86_64-linux with
